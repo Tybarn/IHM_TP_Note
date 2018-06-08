@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
+<HBox maxHeight="400" maxWidth="600" minHeight="400" minWidth="600" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <GridPane alignment="CENTER" prefHeight="400.0" prefWidth="209.0">
         <columnConstraints>
@@ -24,50 +24,53 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+            <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <RadioButton mnemonicParsing="false" text="RadioButton">
+                  <RadioButton mnemonicParsing="false" text="Select / Move" fx:id="rbSelect">
                      <padding>
                         <Insets bottom="5.0" />
                      </padding>
                   </RadioButton>
-                  <RadioButton mnemonicParsing="false" text="RadioButton">
+                  <RadioButton mnemonicParsing="false" text="Ellipse" fx:id="rbEllipse">
                      <padding>
                         <Insets bottom="5.0" />
                      </padding>
                   </RadioButton>
-                  <RadioButton mnemonicParsing="false" text="RadioButton">
+                  <RadioButton mnemonicParsing="false" text="Rectangle" fx:id="rbRectangle">
                      <padding>
                         <Insets bottom="5.0" />
                      </padding>
                   </RadioButton>
-                  <RadioButton mnemonicParsing="false" text="RadioButton">
+                  <RadioButton mnemonicParsing="false" text="Line" fx:id="rbLine">
                      <padding>
                         <Insets bottom="5.0" />
                      </padding>
                   </RadioButton>
                </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
             </VBox>
-            <ColorPicker GridPane.rowIndex="1">
+            <ColorPicker GridPane.rowIndex="1" fx:id="colorpicker">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
             </ColorPicker>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.rowIndex="2">
                <children>
-                  <Button mnemonicParsing="false" text="Button">
+                  <Button mnemonicParsing="false" text="Delete" fx:id="btnDelete">
                      <VBox.margin>
                         <Insets bottom="10.0" />
                      </VBox.margin>
                   </Button>
-                  <Button mnemonicParsing="false" text="Button" />
+                  <Button mnemonicParsing="false" text="Clone" fx:id="btnClone"/>
                </children>
             </VBox>
          </children>
          <padding>
-            <Insets left="15.0" />
+            <Insets left="10.0" />
          </padding>
       </GridPane>
-      <Pane prefHeight="400.0" prefWidth="450.0" />
+      <Pane prefHeight="400.0" prefWidth="450.0" fx:id="paneShapes"/>
    </children>
 </HBox>
