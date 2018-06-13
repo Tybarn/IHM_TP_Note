@@ -51,7 +51,7 @@ public class Controller implements Initializable {
                 if(obj instanceof Ellipse) {
                     Ellipse ep = (Ellipse) obj;
                     paint_save = ep.getFill();
-                    if (paint_save.equals(Color.BLACK))
+                    if (!paint_save.equals(Color.BLACK))
                         ep.setFill(Color.BLACK);
                     else
                         ep.setFill(Color.GREY);
@@ -60,7 +60,7 @@ public class Controller implements Initializable {
                 else if(obj instanceof Rectangle) {
                     Rectangle rect = (Rectangle) obj;
                     paint_save = rect.getFill();
-                    if (paint_save != Color.BLACK)
+                    if (!paint_save.equals(Color.BLACK))
                         rect.setFill(Color.BLACK);
                     else
                         rect.setFill(Color.GREY);
@@ -69,7 +69,7 @@ public class Controller implements Initializable {
                 else {
                     Line line = (Line) obj;
                     paint_save = line.getStroke();
-                    if (line.getStroke() != Color.BLACK)
+                    if (!paint_save.equals(Color.BLACK))
                         line.setStroke(Color.BLACK);
                     else
                         line.setStroke(Color.GREY);
@@ -140,7 +140,7 @@ public class Controller implements Initializable {
                         rect = new Rectangle(x,y,100,50);
                         rect.setFill(colorpicker.getValue());
                         // Event to move it
-                        rect.setOnMouseClicked(ev_select);
+                        rect.setOnMousePressed(ev_select);
                         rect.setOnMouseReleased(ev_end_select);
                         rect.setOnMouseDragged(ev -> {
                             RadioButton r = (RadioButton) groupRb.getSelectedToggle();
@@ -155,10 +155,10 @@ public class Controller implements Initializable {
                     case "Ellipse":
                         line_draw = false;
                         // Create the ellipse
-                        ellipse = new Ellipse(x,y,50,50);
+                        ellipse = new Ellipse(x,y,50,30);
                         ellipse.setFill(colorpicker.getValue());
                         // Event to move it
-                        ellipse.setOnMouseClicked(ev_select);
+                        ellipse.setOnMousePressed(ev_select);
                         ellipse.setOnMouseReleased(ev_end_select);
                         ellipse.setOnMouseDragged(ev -> {
                             RadioButton r = (RadioButton) groupRb.getSelectedToggle();
@@ -176,7 +176,7 @@ public class Controller implements Initializable {
                             line = new Line(line_startX, line_startY, event.getX(), event.getY());
                             line.setStroke(colorpicker.getValue());
                             // Event to move it
-                            line.setOnMouseClicked(ev_select);
+                            line.setOnMousePressed(ev_select);
                             line.setOnMouseReleased(ev_end_select);
                             line.setOnMouseDragged(ev -> {
                                 RadioButton r = (RadioButton) groupRb.getSelectedToggle();
