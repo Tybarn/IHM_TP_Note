@@ -5,6 +5,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
@@ -44,10 +46,12 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> ev_select = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
-            Object obj = event.getSource();
+            Node obj = (Node) event.getSource();
             RadioButton r = (RadioButton) groupRb.getSelectedToggle();
 
             if(r != null && r.getText().equals("Select / Move")) {
+                obj.setCursor(Cursor.MOVE);
+
                 if(obj instanceof Ellipse) {
                     Ellipse ep = (Ellipse) obj;
                     paint_save = ep.getFill();
@@ -90,6 +94,7 @@ public class Controller implements Initializable {
                     obj.setFill(paint_save);
                 else
                     ((Line) obj).setStroke(paint_save);
+                obj.setCursor(Cursor.DEFAULT);
             }
         }
     };
