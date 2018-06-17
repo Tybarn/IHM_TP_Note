@@ -8,7 +8,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -40,9 +39,9 @@ public class Controller implements Initializable {
 
     // Variables for selection of a item
     Paint paint_save = null;
-    Shape save = null;
+    Shape saved_shape = null;
 
-    // Event when we select a shape
+    // Event when we select a shape --------------------------------------------------
     EventHandler<MouseEvent> ev_select = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
@@ -51,24 +50,14 @@ public class Controller implements Initializable {
 
             if(r != null && r.getText().equals("Select / Move")) {
                 obj.setCursor(Cursor.MOVE);
-
-                if(obj instanceof Ellipse) {
-                    Ellipse ep = (Ellipse) obj;
-                    paint_save = ep.getFill();
+                if(obj instanceof Ellipse || obj instanceof Rectangle) {
+                    Shape sh = (Shape) obj;
+                    paint_save = sh.getFill();
                     if (!paint_save.equals(Color.BLACK))
-                        ep.setFill(Color.BLACK);
+                        sh.setFill(Color.BLACK);
                     else
-                        ep.setFill(Color.GREY);
-                    save = ep;
-                }
-                else if(obj instanceof Rectangle) {
-                    Rectangle rect = (Rectangle) obj;
-                    paint_save = rect.getFill();
-                    if (!paint_save.equals(Color.BLACK))
-                        rect.setFill(Color.BLACK);
-                    else
-                        rect.setFill(Color.GREY);
-                    save = rect;
+                        sh.setFill(Color.GREY);
+                    saved_shape = sh;
                 }
                 else {
                     Line line = (Line) obj;
@@ -77,13 +66,15 @@ public class Controller implements Initializable {
                         line.setStroke(Color.BLACK);
                     else
                         line.setStroke(Color.GREY);
-                    save = line;
+                    saved_shape = line;
                 }
+                btnDelete.setDisable(false);
+                btnClone.setDisable(false);
             }
         }
     };
 
-    // Event when we release the shape
+    // Event when we release the shape ------------------------------------------------
     EventHandler<MouseEvent> ev_end_select = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
@@ -93,12 +84,51 @@ public class Controller implements Initializable {
                 if (obj instanceof Ellipse || obj instanceof Rectangle)
                     obj.setFill(paint_save);
                 else
-                    ((Line) obj).setStroke(paint_save);
+                    obj.setStroke(paint_save); // Line
                 obj.setCursor(Cursor.DEFAULT);
             }
         }
     };
 
+    // Event when we want to move a shape ----------------------------------------------
+    EventHandler<MouseEvent> ev_drag_rect = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            RadioButton r = (RadioButton) groupRb.getSelectedToggle();
+            if(r != null && r.getText().equals("Select / Move")) {
+                Rectangle rg = (Rectangle) event.getSource();
+                rg.setX(event.getX());
+                rg.setY(event.getY());
+            }
+        }
+    };
+    EventHandler<MouseEvent> ev_drag_ellip = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            RadioButton r = (RadioButton) groupRb.getSelectedToggle();
+            if(r != null && r.getText().equals("Select / Move")) {
+                Ellipse e = (Ellipse) event.getSource();
+                e.setCenterX(event.getX());
+                e.setCenterY(event.getY());
+            }
+        }
+    };
+    EventHandler<MouseEvent> ev_drag_line = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            RadioButton r = (RadioButton) groupRb.getSelectedToggle();
+            if(r != null && r.getText().equals("Select / Move")) {
+                Line ln = (Line) event.getSource();
+                ln.setTranslateX(event.getSceneX() - (paneShapes.getLayoutX() + (ln.getStartX() + ln.getEndX()) / 2));
+                ln.setTranslateY(event.getSceneY() - (paneShapes.getLayoutY() + (ln.getStartY() + ln.getEndY()) / 2));
+            }
+        }
+    };
+
+
+    /**
+     * Initialize the scene of the application
+     */
     public void initialize(URL location, ResourceBundle resources) {
         // Adding RadioButtons to a ToggleGroup
         rbSelect.setToggleGroup(groupRb);
@@ -119,6 +149,69 @@ public class Controller implements Initializable {
             public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
                 if(oldValue != null)
                     oldValue.setSelected(false);
+                btnClone.setDisable(true);
+                btnDelete.setDisable(true);
+                saved_shape = null;
+                paint_save = null;
+            }
+        });
+
+        // Event on Delete button
+        btnDelete.setOnAction(event -> {
+            if(saved_shape != null) {
+                paneShapes.getChildren().remove(saved_shape);
+                saved_shape = null;
+                paint_save = null;
+                btnDelete.setDisable(true);
+                btnClone.setDisable(true);
+            }
+        });
+
+        // Event on Clone button
+        btnClone.setOnAction(event -> {
+            Ellipse ep = null;
+            Rectangle rect = null;
+            Line line = null;
+            if(saved_shape != null) {
+                if(saved_shape instanceof Ellipse) {
+                    // Creation of a new Ellipse
+                    ep = new Ellipse(((Ellipse) saved_shape).getCenterX(), ((Ellipse) saved_shape).getCenterY(),
+                            ((Ellipse) saved_shape).getRadiusX(), ((Ellipse) saved_shape).getRadiusY());
+                    ep.setFill(saved_shape.getFill());
+
+                    // Event
+                    ep.setOnMousePressed(ev_select);
+                    ep.setOnMouseReleased(ev_end_select);
+                    ep.setOnMouseDragged(ev_drag_ellip);
+
+                    paneShapes.getChildren().add(ep);
+                }
+                else if(saved_shape instanceof Rectangle) {
+                    // Creation of a new Rectangle
+                    rect = new Rectangle(((Rectangle) saved_shape).getX(), ((Rectangle) saved_shape).getY(),
+                            ((Rectangle) saved_shape).getWidth(), ((Rectangle) saved_shape).getHeight());
+                    rect.setFill(saved_shape.getFill());
+
+                    // Event
+                    rect.setOnMousePressed(ev_select);
+                    rect.setOnMouseReleased(ev_end_select);
+                    rect.setOnMouseDragged(ev_drag_rect);
+
+                    paneShapes.getChildren().add(rect);
+                }
+                else {
+                    // Creation of a new Line
+                    line = new Line(((Line) saved_shape).getStartX(), ((Line) saved_shape).getStartY(),
+                            ((Line) saved_shape).getEndX(), ((Line) saved_shape).getEndY());
+                    line.setStroke(saved_shape.getStroke());
+
+                    // Event
+                    line.setOnMousePressed(ev_select);
+                    line.setOnMouseReleased(ev_end_select);
+                    line.setOnMouseDragged(ev_drag_line);
+
+                    paneShapes.getChildren().add(line);
+                }
             }
         });
 
@@ -147,14 +240,7 @@ public class Controller implements Initializable {
                         // Event to move it
                         rect.setOnMousePressed(ev_select);
                         rect.setOnMouseReleased(ev_end_select);
-                        rect.setOnMouseDragged(ev -> {
-                            RadioButton r = (RadioButton) groupRb.getSelectedToggle();
-                            if(r != null && r.getText().equals("Select / Move")) {
-                                Rectangle rg = (Rectangle) ev.getSource();
-                                rg.setX(ev.getX());
-                                rg.setY(ev.getY());
-                            }
-                        });
+                        rect.setOnMouseDragged(ev_drag_line);
                         paneShapes.getChildren().add(rect);
                         break;
                     case "Ellipse":
@@ -165,14 +251,7 @@ public class Controller implements Initializable {
                         // Event to move it
                         ellipse.setOnMousePressed(ev_select);
                         ellipse.setOnMouseReleased(ev_end_select);
-                        ellipse.setOnMouseDragged(ev -> {
-                            RadioButton r = (RadioButton) groupRb.getSelectedToggle();
-                            if(r != null && r.getText().equals("Select / Move")) {
-                                Ellipse e = (Ellipse) ev.getSource();
-                                e.setCenterX(ev.getX());
-                                e.setCenterY(ev.getY());
-                            }
-                        });
+                        ellipse.setOnMouseDragged(ev_drag_ellip);
                         paneShapes.getChildren().add(ellipse);
                         break;
                     case "Line":
@@ -183,14 +262,7 @@ public class Controller implements Initializable {
                             // Event to move it
                             line.setOnMousePressed(ev_select);
                             line.setOnMouseReleased(ev_end_select);
-                            line.setOnMouseDragged(ev -> {
-                                RadioButton r = (RadioButton) groupRb.getSelectedToggle();
-                                if(r != null && r.getText().equals("Select / Move")) {
-                                    Line ln = (Line) ev.getSource();
-                                    ln.setTranslateX(ev.getSceneX() - (paneShapes.getLayoutX() + (ln.getStartX() + ln.getEndX()) / 2));
-                                    ln.setTranslateY(ev.getSceneY() - (paneShapes.getLayoutY() + (ln.getStartY() + ln.getEndY()) / 2));
-                                }
-                            });
+                            line.setOnMouseDragged(ev_drag_line);
                             paneShapes.getChildren().add(line);
                             line_draw = false;
                         }
