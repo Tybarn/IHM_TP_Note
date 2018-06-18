@@ -38,7 +38,7 @@ public class Controller implements Initializable {
     private double line_startX = 0, line_startY = 0;
 
     // Variables for selection of a item
-    Paint paint_save = null;
+    Paint paint_save = null; // Used only to give back to the shape its first color after clicked on it
     Shape saved_shape = null;
 
     // Event when we select a shape --------------------------------------------------
@@ -151,6 +151,16 @@ public class Controller implements Initializable {
 
         // Init ColorPicker
         colorpicker.setValue(Color.BLUE);
+
+        // Event on Color changing in colorpicker
+        colorpicker.setOnAction(event -> {
+            if(saved_shape != null) {
+                if(saved_shape instanceof Line)
+                    saved_shape.setStroke(colorpicker.getValue());
+                else
+                    saved_shape.setFill(colorpicker.getValue());
+            }
+        });
 
         // Event on Radiobutton
         groupRb.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
