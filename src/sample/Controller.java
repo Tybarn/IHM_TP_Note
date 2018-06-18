@@ -95,10 +95,13 @@ public class Controller implements Initializable {
         @Override
         public void handle(MouseEvent event) {
             RadioButton r = (RadioButton) groupRb.getSelectedToggle();
-            if(r != null && r.getText().equals("Select / Move")) {
-                Rectangle rg = (Rectangle) event.getSource();
-                rg.setX(event.getX());
-                rg.setY(event.getY());
+            if (event.getSceneX() >= paneShapes.getLayoutX() && event.getSceneX() <= (paneShapes.getLayoutX() + paneShapes.getWidth())
+                    && event.getSceneY() >= paneShapes.getLayoutY() && event.getSceneY() <= (paneShapes.getLayoutY() + paneShapes.getHeight())) {
+                if (r != null && r.getText().equals("Select / Move")) {
+                    Rectangle rg = (Rectangle) event.getSource();
+                    rg.setX(event.getX() - (rg.getWidth() / 2));
+                    rg.setY(event.getY() - (rg.getHeight() / 2));
+                }
             }
         }
     };
@@ -106,10 +109,13 @@ public class Controller implements Initializable {
         @Override
         public void handle(MouseEvent event) {
             RadioButton r = (RadioButton) groupRb.getSelectedToggle();
-            if(r != null && r.getText().equals("Select / Move")) {
-                Ellipse e = (Ellipse) event.getSource();
-                e.setCenterX(event.getX());
-                e.setCenterY(event.getY());
+            if (event.getSceneX() >= paneShapes.getLayoutX() && event.getSceneX() <= (paneShapes.getLayoutX() + paneShapes.getWidth())
+                    && event.getSceneY() >= paneShapes.getLayoutY() && event.getSceneY() <= (paneShapes.getLayoutY() + paneShapes.getHeight())) {
+                if (r != null && r.getText().equals("Select / Move")) {
+                    Ellipse e = (Ellipse) event.getSource();
+                    e.setCenterX(event.getX());
+                    e.setCenterY(event.getY());
+                }
             }
         }
     };
@@ -117,10 +123,13 @@ public class Controller implements Initializable {
         @Override
         public void handle(MouseEvent event) {
             RadioButton r = (RadioButton) groupRb.getSelectedToggle();
-            if(r != null && r.getText().equals("Select / Move")) {
-                Line ln = (Line) event.getSource();
-                ln.setTranslateX(event.getSceneX() - (paneShapes.getLayoutX() + (ln.getStartX() + ln.getEndX()) / 2));
-                ln.setTranslateY(event.getSceneY() - (paneShapes.getLayoutY() + (ln.getStartY() + ln.getEndY()) / 2));
+            if (event.getSceneX() >= paneShapes.getLayoutX() && event.getSceneX() <= (paneShapes.getLayoutX() + paneShapes.getWidth())
+                    && event.getSceneY() >= paneShapes.getLayoutY() && event.getSceneY() <= (paneShapes.getLayoutY() + paneShapes.getHeight())) {
+                if (r != null && r.getText().equals("Select / Move")) {
+                    Line ln = (Line) event.getSource();
+                    ln.setTranslateX(event.getSceneX() - (paneShapes.getLayoutX() + (ln.getStartX() + ln.getEndX()) / 2));
+                    ln.setTranslateY(event.getSceneY() - (paneShapes.getLayoutY() + (ln.getStartY() + ln.getEndY()) / 2));
+                }
             }
         }
     };
@@ -240,7 +249,7 @@ public class Controller implements Initializable {
                         // Event to move it
                         rect.setOnMousePressed(ev_select);
                         rect.setOnMouseReleased(ev_end_select);
-                        rect.setOnMouseDragged(ev_drag_line);
+                        rect.setOnMouseDragged(ev_drag_rect);
                         paneShapes.getChildren().add(rect);
                         break;
                     case "Ellipse":
